@@ -2,15 +2,14 @@ package com.smartattendance.backend.Services;
 
 import com.smartattendance.backend.Dto.StudentResponseDto;
 import com.smartattendance.backend.Entity.Student;
+import com.smartattendance.backend.Exception.ResourceNotFoundException;
 import com.smartattendance.backend.Repositery.StudentRepo;
 import com.smartattendance.backend.mapper.StudentMapper;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
-
 public class StudentServices {
     private final StudentMapper studentMapper;
     private final StudentRepo studentRepository;
@@ -21,18 +20,9 @@ public class StudentServices {
     }
 
     public StudentResponseDto getStudentById(Integer id) {
-
-        Optional<Student> studentOptional =
-                studentRepository.findById(id);
-
-        if (studentOptional.isPresent()) {
-
-            Student student = studentOptional.get();
-
-            return studentMapper.toDto(student);
-        }
-
-        return null;
+        Student student = studentRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Student not found with id: " + id));
+        return studentMapper.toDto(student);
     }
 
     public List<StudentResponseDto> getAllStudents() {
@@ -49,21 +39,21 @@ public class StudentServices {
     }
 
     public StudentResponseDto updateStudent(Integer id, StudentResponseDto studentResponseDto) {
-        Optional<Student> studentOptional = studentRepository.findById(id);
-        if (studentOptional.isPresent()) {
-            Student existingStudent = studentOptional.get();
-            existingStudent.setName(studentResponseDto.getName());
-            existingStudent.setEmail(studentResponseDto.getEmail());
-            existingStudent.setPhoneNumber(studentResponseDto.getPhoneNumber());
-            existingStudent.setAddress(studentResponseDto.getAddress());
-            Student updatedStudent = studentRepository.save(existingStudent);
-            return studentMapper.toDto(updatedStudent);
-        }
-        return null;
+        Student existingStudent = studentRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Student not found with id: " + id));
+
+        existingStudent.setName(studentResponseDto.getName());
+        existingStudent.setEmail(studentResponseDto.getEmail());
+        existingStudent.setPhoneNumber(studentResponseDto.getPhoneNumber());
+        existingStudent.setAddress(studentResponseDto.getAddress());
+
+        Student updatedStudent = studentRepository.save(existingStudent);
+        return studentMapper.toDto(updatedStudent);
     }
 
     public void deleteStudent(Integer id) {
-        studentRepository.deleteById(id);
+        Student student = studentRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Student not found with id: " + id));
+        studentRepository.delete(student);
     }
-
 }

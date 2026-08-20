@@ -6,7 +6,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class StudentMapper {
-    public Student toEntity(@org.jetbrains.annotations.UnknownNullability StudentResponseDto dto) {
+    public Student toEntity(StudentResponseDto dto) {
         Student student = new Student();
         student.setId(dto.getId());
         student.setName(dto.getName());
