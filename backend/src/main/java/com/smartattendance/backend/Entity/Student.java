@@ -16,7 +16,7 @@ import org.springframework.data.annotation.Id;
 public class Student {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer studentId;
+    private Integer id;
     @Column(nullable = false,length = 100)
     private String name;
     @Column(nullable = false,unique = true)
